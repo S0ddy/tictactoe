@@ -24,12 +24,14 @@ def player(board):
     """
     x_count = 0
     o_count = 0
+    
     for i in board:
         for j in board[i]:
             if board[i][j] == X:
                 x_count += 1
             elif board[i][j] == O:
                 o_count += 1
+
     if x_count >= o_count:
         return X
     return O
@@ -39,8 +41,14 @@ def actions(board):
     """
     Returns set of all possible actions (i, j) available on the board.
     """
-    raise NotImplementedError
+    possible_actions = set()
 
+    for i in board:
+        for j in board[i]:
+            if board[i][j] != X and board[i][j] != O:
+                possible_actions.add((i,j))
+
+    return possible_actions
 
 def result(board, action):
     """

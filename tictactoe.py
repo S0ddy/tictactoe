@@ -24,12 +24,12 @@ def player(board):
     """
     x_count = 0
     o_count = 0
-    
-    for i in board:
-        for j in board[i]:
-            if board[i][j] == X:
+
+    for row in board:
+        for col in board[row]:
+            if board[row][col] == X:
                 x_count += 1
-            elif board[i][j] == O:
+            elif board[row][col] == O:
                 o_count += 1
 
     if x_count >= o_count:
@@ -43,10 +43,10 @@ def actions(board):
     """
     possible_actions = set()
 
-    for i in board:
-        for j in board[i]:
-            if board[i][j] != X and board[i][j] != O:
-                possible_actions.add((i,j))
+    for row in board:
+        for col in board[row]:
+            if board[row][col] != X and board[row][col] != O:
+                possible_actions.add((row,col))
 
     return possible_actions
 
@@ -54,7 +54,29 @@ def result(board, action):
     """
     Returns the board that results from making move (i, j) on the board.
     """
-    raise NotImplementedError
+    if not is_valid_action(action) or not is_valid_board_field(action, board):
+        raise ValueError
+    
+    new_board = board.copy()
+    row = action[0]
+    col = action[1]
+
+    new_board[row][col] = player(board)
+
+    return new_board
+
+
+def is_valid_board_field(action, board):
+    return board[action[0]][action[1]] == None
+
+def is_valid_action(action):
+    return is_valid_action_size(action) and is_valid_action_values(action)
+
+def is_valid_action_size(action):
+    return len(action) == 2
+
+def is_valid_action_values(action):
+    return action[0] not in (0,1,2) and action[1] not in (0,1,2)
 
 
 def winner(board):

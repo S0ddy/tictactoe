@@ -67,6 +67,7 @@ def result(board, action):
 
 
 def is_valid_board_field(action, board):
+    
     return board[action[0]][action[1]] == None
 
 def is_valid_action(action):
@@ -83,7 +84,28 @@ def winner(board):
     """
     Returns the winner of the game, if there is one.
     """
-    raise NotImplementedError
+
+    #check cross
+    is_cross_00_winner = board[0][0] == board[1][1] == board[2][2] and board[0][0] != None
+    is_cross_20_winner = board[2][0] == board[1][1] == board[0][2] and board[2][0] != None
+    
+    if is_cross_00_winner:
+        return board[0][0]
+    if is_cross_20_winner:
+        return board[2][0]
+
+    #check horizontal and vertical
+    for i in range(3):
+        row = board[i]
+        is_horizontal_winner = row[0] == row[1] == row[2] and row[0] != None
+        is_vertical_winner = board[0][i] == board[1][i] == board [2][i] and board[0][i] != None
+
+        if is_horizontal_winner:
+            return row[0]
+        if is_vertical_winner:
+            return board[0][i]
+
+    return None
 
 
 def terminal(board):

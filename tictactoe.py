@@ -112,7 +112,14 @@ def terminal(board):
     """
     Returns True if game is over, False otherwise.
     """
-    raise NotImplementedError
+    return winner(board) != None or is_all_field_filled(board)
+
+def is_all_field_filled(board):
+    for row in board:
+        for col in row:
+            if board[row][col] == None:
+                return False
+    return True
 
 
 def utility(board):

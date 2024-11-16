@@ -46,9 +46,10 @@ def actions(board):
     for row in range(3):
         for col in range(3):
             if board[row][col] != X and board[row][col] != O:
-                possible_actions.add((row,col))
+                possible_actions.add((row, col))
 
     return possible_actions
+
 
 def result(board, action):
     """
@@ -72,28 +73,33 @@ def is_valid_board_field(action, board):
     
     return board[action[0]][action[1]] == None
 
+
 def is_valid_action(action):
     return is_valid_action_size(action) and is_valid_action_values(action)
+
 
 def is_valid_action_size(action):
     return len(action) == 2
 
+
 def is_valid_action_values(action):
-    return action[0] in (0,1,2) and action[1] in (0,1,2)
+    return action[0] in (0, 1, 2) and action[1] in (0, 1, 2)
+
 
 def deepcopy(board):
-    new_board = [ [ None for i in range(3) ] for j in range(3) ]
+    new_board = [[None for i in range(3)] for j in range(3)]
     for i in range(3):
         for j in range(3):
             new_board[i][j] = board[i][j]
     return new_board
+
 
 def winner(board):
     """
     Returns the winner of the game, if there is one.
     """
 
-    #check cross
+    # check cross
     is_cross_00_winner = board[0][0] == board[1][1] == board[2][2] and board[0][0] != None
     is_cross_20_winner = board[2][0] == board[1][1] == board[0][2] and board[2][0] != None
     
@@ -102,11 +108,11 @@ def winner(board):
     if is_cross_20_winner:
         return board[2][0]
 
-    #check horizontal and vertical
+    # check horizontal and vertical
     for i in range(3):
         row = board[i]
         is_horizontal_winner = row[0] == row[1] == row[2] and row[0] != None
-        is_vertical_winner = board[0][i] == board[1][i] == board [2][i] and board[0][i] != None
+        is_vertical_winner = board[0][i] == board[1][i] == board[2][i] and board[0][i] != None
 
         if is_horizontal_winner:
             return row[0]
@@ -121,6 +127,7 @@ def terminal(board):
     Returns True if game is over, False otherwise.
     """
     return winner(board) != None or is_all_field_filled(board)
+
 
 def is_all_field_filled(board):
     for row in range(3):
@@ -156,6 +163,7 @@ def minimax(board):
     
     return res[1]
 
+
 def max_value_and_action(board):
     if terminal(board):
         return (utility(board), None)
@@ -166,11 +174,12 @@ def max_value_and_action(board):
 
     for action in actions_list:
         prediction = min_value_and_action(result(board, action))
-        if(prediction[0] > highest_value):
+        if prediction[0] > highest_value:
             highest_value = prediction[0]
             best_move = action
 
     return (highest_value, best_move)
+
 
 def min_value_and_action(board):
     if terminal(board):
@@ -182,7 +191,7 @@ def min_value_and_action(board):
 
     for action in actions_list:
         prediction = max_value_and_action(result(board, action))
-        if(prediction[0] < lowest_value):
+        if prediction[0] < lowest_value:
             lowest_value = prediction[0]
             best_move = action
 

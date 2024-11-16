@@ -25,14 +25,14 @@ def player(board):
     x_count = 0
     o_count = 0
 
-    for row in board:
-        for col in board[row]:
+    for row in range(3):
+        for col in range(3):
             if board[row][col] == X:
                 x_count += 1
             elif board[row][col] == O:
                 o_count += 1
 
-    if x_count >= o_count:
+    if x_count <= o_count:
         return X
     return O
 
@@ -43,8 +43,8 @@ def actions(board):
     """
     possible_actions = set()
 
-    for row in board:
-        for col in board[row]:
+    for row in range(3):
+        for col in range(3):
             if board[row][col] != X and board[row][col] != O:
                 possible_actions.add((row,col))
 
@@ -54,10 +54,12 @@ def result(board, action):
     """
     Returns the board that results from making move (i, j) on the board.
     """
-    if not is_valid_action(action) or not is_valid_board_field(action, board):
+    is_v_a = is_valid_action(action)
+    is_v_f = is_valid_board_field(action, board)
+    if not is_v_a or not is_v_f:
         raise ValueError
     
-    new_board = board.copy()
+    new_board = deepcopy(board)
     row = action[0]
     col = action[1]
 
@@ -77,8 +79,14 @@ def is_valid_action_size(action):
     return len(action) == 2
 
 def is_valid_action_values(action):
-    return action[0] not in (0,1,2) and action[1] not in (0,1,2)
+    return action[0] in (0,1,2) and action[1] in (0,1,2)
 
+def deepcopy(board):
+    new_board = [ [ None for i in range(3) ] for j in range(3) ]
+    for i in range(3):
+        for j in range(3):
+            new_board[i][j] = board[i][j]
+    return new_board
 
 def winner(board):
     """
@@ -115,8 +123,8 @@ def terminal(board):
     return winner(board) != None or is_all_field_filled(board)
 
 def is_all_field_filled(board):
-    for row in board:
-        for col in row:
+    for row in range(3):
+        for col in range(3):
             if board[row][col] == None:
                 return False
     return True
@@ -126,9 +134,9 @@ def utility(board):
     """
     Returns 1 if X has won the game, -1 if O has won, 0 otherwise.
     """
-    winner = winner(board)
-    if winner != None:
-        if winner == X:
+    win = winner(board)
+    if win != None:
+        if win == X:
             return 1
         return -1
     return 0
@@ -140,61 +148,42 @@ def minimax(board):
     """
     if terminal(board):
         return None
+    
     if player(board) == X:
-        return optimal_move_for_x(board)
+        res = max_value_and_action(board)
     else:
-        return optimal_move_for_o(board)
+        res = min_value_and_action(board)
     
-def optimal_move_for_x(board):
-    highest_action = None
-    highest_value = -2
+    return res[1]
 
-    for action in actions(board):
-        mv = max_value(result(board, action))
-
-        if(mv == 1):
-            return action
-        
-        if mv > highest_value:
-            highest_value = mv
-            highest_action = action
-
-    return highest_action
-
-def max_value(board):
+def max_value_and_action(board):
     if terminal(board):
-        return utility(board)
+        return (utility(board), None)
     
-    highest_value = -2
+    actions_list = actions(board)
+    highest_value = -9999999
+    best_move = None
 
-    for action in actions(board):
-        highest_value = max(highest_value, min_value(result(board, action)))
+    for action in actions_list:
+        prediction = min_value_and_action(result(board, action))
+        if(prediction[0] > highest_value):
+            highest_value = prediction[0]
+            best_move = action
 
-    return highest_value
+    return (highest_value, best_move)
 
-def min_value(board):
+def min_value_and_action(board):
     if terminal(board):
-        return utility(board)
+        return (utility(board), None)
     
-    lowest_value = 2
+    actions_list = actions(board)
+    lowest_value = 9999999
+    best_move = None
 
-    for action in actions(board):
-        lowest_value = min(highest_value, max_value(result(board, action)))
+    for action in actions_list:
+        prediction = max_value_and_action(result(board, action))
+        if(prediction[0] < lowest_value):
+            lowest_value = prediction[0]
+            best_move = action
 
-    return lowest_value
-
-def optimal_move_for_o(board):
-    lowest_action = None
-    lowest_value = 2
-
-    for action in actions:
-        mv = min_value(result(board, action))
-        
-        if(mv == -1):
-            return action
-        
-        if mv < lowest_value:
-            lowest_value = mv
-            lowest_action = action
-
-    return lowest_action
+    return (lowest_value, best_move)
